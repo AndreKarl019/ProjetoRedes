@@ -136,7 +136,7 @@ class SecurePeerApp:
         window.geometry("540x590")
         window.transient(self.root)
         fields = {}
-        for label, key in [("Nome do peer", "name"), ("Endereço IP", "address"), ("Porta TCP", "port"), ("IP virtual", "tunnel_ip"), ("Chave pública X25519", "encryption_public"), ("Chave pública Ed25519", "signing_public")]:
+        for label, key in [("Nome da identidade do peer (exatamente como criada na outra máquina)", "name"), ("Endereço IP", "address"), ("Porta TCP", "port"), ("IP virtual", "tunnel_ip"), ("Chave pública X25519", "encryption_public"), ("Chave pública Ed25519", "signing_public")]:
             ttk.Label(window, text=label).pack(anchor="w", padx=20, pady=(10, 2))
             entry = ttk.Entry(window, width=65)
             entry.pack(padx=20, fill="x")

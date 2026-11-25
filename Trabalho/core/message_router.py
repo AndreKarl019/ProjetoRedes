@@ -29,17 +29,28 @@ class MessageRouter:
             raise PermissionError("O remetente não é um peer confiável.")
         if packet.get("version") != 1 or packet.get("type") != "message":
             raise ValueError("Pacote de mensagem inválido.")
-        if packet.get("sender") != peer[1] or packet.get("recipient") != local_name:
-            raise PermissionError("Identidade ou destinatário incompatível.")
+        # Primeiro valida quem assinou o pacote; só então usa os campos
+        # sender/recipient para diagnosticar o vínculo entre as identidades.
+        if packet.get("sender") != peer[1]:
+            raise PermissionError(
+                f"Identidade do remetente incompatível: recebido {packet.get('sender')!r}; "
+                f"peer cadastrado {peer[1]!r}."
+            )
+        if not verify_packet(packet, peer[6]):
+            raise PermissionError("Assinatura Ed25519 inválida: o pacote não foi autenticado pelo peer cadastrado.")
+        if packet.get("recipient") != local_name:
+            raise PermissionError(
+                f"Destinatário incompatível: a mensagem foi endereçada a "
+                f"{packet.get('recipient')!r}, mas a identidade ativa neste receptor é {local_name!r}. "
+                "Confira se o nome da identidade local corresponde exatamente ao cadastrado na outra máquina."
+            )
         timestamp = packet.get("timestamp")
         if not isinstance(timestamp, int) or abs(time.time() - timestamp) > MAX_CLOCK_DIFFERENCE:
             raise ValueError("Mensagem fora da janela de tempo.")
         message_id = packet.get("message_id")
         if not isinstance(message_id, str) or len(message_id) != 36:
             raise ValueError("Identificador de mensagem inválido.")
-        # Verificar assinatura antes de considerar a mensagem repetida.
-        if not verify_packet(packet, peer[6]):
-            raise PermissionError("Assinatura Ed25519 inválida.")
+        # A assinatura já foi validada antes de confiar nos campos do pacote.
         if database.nonce_already_received(peer[0], message_id):
             return None, message_id
         header = {k: packet[k] for k in ("version", "type", "message_id", "sender", "recipient", "timestamp")}
