@@ -220,10 +220,11 @@ __marimo__/
 .streamlit/secrets.toml
 
 #dados
-data/securepeer.db
-data/*.key
-data/identities/*
+Trabalho/data/securepeer.db
+Trabalho/data/*.key
+Trabalho/data/identities/*
 *.conf
 
 #versão já compilada
 *.pyc
+
