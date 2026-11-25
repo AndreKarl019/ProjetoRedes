@@ -26,7 +26,7 @@ class IdentityWindow:
         self.window = tk.Toplevel(parent)
 
         self.window.title("SecurePeer - Minha identidade")
-        self.window.geometry("650x560")
+        self.window.geometry("700x680")
         self.window.resizable(False, False)
 
         self.create_interface()
@@ -143,6 +143,17 @@ class IdentityWindow:
             text=signing_fp,
             font=("Consolas", 9)
         ).pack(anchor="w", pady=3)
+
+        addresses = self.identity.get("addresses", [])
+        address_text = "\n".join(
+            f'{item.get("address")}:{item.get("port", 8765)}'
+            for item in addresses
+        ) or "Nenhum endereço local registrado"
+        self.create_field(
+            self.window,
+            "Endereços públicos anunciados (endereços de rede)",
+            address_text
+        )
 
         ttk.Button(
             self.window,
