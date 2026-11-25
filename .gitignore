@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+#dados
+data/securepeer.db
+data/*.key
+data/identities/*
+*.conf
+
+#versão já compilada
+*.pyc
